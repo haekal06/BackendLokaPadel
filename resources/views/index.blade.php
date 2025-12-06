@@ -79,6 +79,14 @@
                 </a>
             </li>
 
+            <!-- Nav Item - Bantuan -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bantuan.index') }}">
+                    <i class="fas fa-life-ring"></i>
+                    <span>Bantuan</span>
+                </a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 
@@ -101,17 +109,29 @@
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
+
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                    {{ Auth::user()->name }}
+                                </span>
+
+                                @php
+                                // pakai profile_photo, fallback ke photo kalau masih ada kolom lama
+                                $photoPath = Auth::user()->profile_photo ?? Auth::user()->photo;
+                                @endphp
 
                                 <!-- Menampilkan Foto Profil -->
-                                <img class="img-profile rounded-circle" src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('img/undraw_profile.svg') }}" alt="User Photo">
+                                <img class="img-profile rounded-circle"
+                                    src="{{ $photoPath ? asset('storage/' . $photoPath) : asset('img/undraw_profile.svg') }}"
+                                    alt="User Photo">
                             </a>
 
                             <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
                                 <!-- Logout -->
                                 <form action="{{ route('logout') }}" method="POST" class="dropdown-item">
                                     @csrf
@@ -131,9 +151,13 @@
                 </div>
 
             </div>
+            <!-- End of Main Content -->
+
         </div>
+        <!-- End of Content Wrapper -->
 
     </div>
+    <!-- End of Page Wrapper -->
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">

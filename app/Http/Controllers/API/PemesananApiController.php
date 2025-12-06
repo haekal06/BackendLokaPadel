@@ -427,4 +427,90 @@ class PemesananApiController extends Controller
             'data'    => $pemesanans,
         ]);
     }
+
+    // di PemesananApiController.php
+
+    public function jamTersedia(Request $request)
+    {
+        $request->validate([
+            'lapangan_id' => 'required|integer|exists:lapangans,id',
+            'tanggal'     => 'required|date',
+        ]);
+
+        $lapanganId = $request->lapangan_id;
+        $tanggal    = $request->tanggal;
+
+        // Semua slot jam yang mungkin
+        $allSlots = [
+            '06:00',
+            '07:00',
+            '08:00',
+            '09:00',
+            '10:00',
+            '11:00',
+            '12:00',
+            '13:00',
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00',
+            '18:00',
+            '19:00',
+            '20:00',
+            '21:00',
+        ];
+
+        // Ambil semua pemesanan untuk lapangan & tanggal tsb
+        // status yg mengunci slot silakan sesuaikan (pending/paid)
+        $pemesanans = Pemesanan::where('lapangan_id', $lapanganId)
+            ->whereDate('tanggal', $tanggal)
+            ->whereIn('status', ['pending', 'paid'])   // <-- sesuaikan kalau perlu
+            ->get(['waktu', 'durasi']);
+
+        $bookedSlots = [];
+
+        foreach ($pemesanans as $pesan) {
+            // Format di DB biasanya "HH:MM:SS" → ambil 5 char pertama
+            $waktuString = $pesan->waktu;
+            if (strlen($waktuString) >= 5) {
+                $waktuString = substr($waktuString, 0, 5); // "06:00:00" -> "06:00"
+            }
+
+            try {
+                $start = Carbon::createFromFormat('H:i', $waktuString);
+            } catch (\Exception $e) {
+                Log::error('Gagal parse waktu pemesanan', [
+                    'waktu' => $pesan->waktu,
+                    'error' => $e->getMessage(),
+                ]);
+                continue;
+            }
+
+            $durasi = (int) $pesan->durasi;
+
+            // contoh: 08:00 durasi 2 jam → blok 08:00 & 09:00
+            for ($i = 0; $i < $durasi; $i++) {
+                $slot = $start->copy()->addHours($i)->format('H:00');
+                $bookedSlots[] = $slot;
+            }
+        }
+
+        $bookedSlots = array_unique($bookedSlots);
+
+        // Jam yang masih tersedia = semua slot - slot yang sudah dibooking
+        $available = array_values(array_diff($allSlots, $bookedSlots));
+        sort($available);
+
+        Log::info('Jam tersedia', [
+            'lapangan_id' => $lapanganId,
+            'tanggal'     => $tanggal,
+            'booked'      => $bookedSlots,
+            'available'   => $available,
+        ]);
+
+        return response()->json([
+            'success'   => true,
+            'available' => $available,
+        ]);
+    }
 }

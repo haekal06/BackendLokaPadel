@@ -12,17 +12,21 @@ class StorageController extends Controller
      */
     public function show($path)
     {
-        $filePath = storage_path('app/public/' . $path);
+        // path relatif yg dikirim adalah "profile_photos/xxx.jpg"
+        $fullPath = storage_path('app/public/' . $path);
 
-        if (!file_exists($filePath)) {
+        if (!file_exists($fullPath)) {
             abort(404);
         }
 
-        $mime = mime_content_type($filePath);
+        $mime = mime_content_type($fullPath);
 
-        return response()->file($filePath, [
-            'Content-Type'                => $mime,
-            'Access-Control-Allow-Origin' => '*',  // <-- kunci CORS
+        return response()->file($fullPath, [
+            'Content-Type' => $mime,
+
+            // Header CORS sederhana (membantu terutama di Flutter Web)
+            'Access-Control-Allow-Origin'  => '*',
+            'Access-Control-Allow-Methods' => 'GET, OPTIONS',
         ]);
     }
 }

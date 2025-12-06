@@ -16,6 +16,7 @@
     <thead>
         <tr>
             <th>No</th>
+            <th>Foto Profil</th>
             <th>Nama Lengkap</th>
             <th>Email</th>
             <th>Role</th>
@@ -24,8 +25,25 @@
     </thead>
     <tbody>
         @foreach ($users as $user)
+        @php
+        // pakai profile_photo kalau ada, fallback ke photo kalau masih dipakai
+        $photoPath = $user->profile_photo ?? $user->photo;
+        @endphp
         <tr>
             <td>{{ $loop->iteration }}</td>
+            <td class="text-center">
+                @if ($photoPath)
+                <img src="{{ asset('storage/' . $photoPath) }}"
+                    alt="User Photo"
+                    class="img-thumbnail"
+                    style="width: 60px; height: 60px; object-fit: cover;">
+                @else
+                <img src="{{ asset('img/undraw_profile.svg') }}"
+                    alt="Default Photo"
+                    class="img-thumbnail"
+                    style="width: 60px; height: 60px; object-fit: cover;">
+                @endif
+            </td>
             <td>{{ $user->name }} {{ $user->last_name }}</td>
             <td>{{ $user->email }}</td>
             <td>{{ ucfirst($user->role) }}</td>
@@ -34,7 +52,11 @@
                 <form action="{{ route('user.destroy', $user->id) }}" method="post" style="display:inline;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                    <button type="submit"
+                        class="btn btn-sm btn-danger"
+                        onclick="return confirm('Are you sure?')">
+                        Delete
+                    </button>
                 </form>
             </td>
         </tr>

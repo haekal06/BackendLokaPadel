@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\StorageController;
+use App\Http\Controllers\BantuanController;
 
 // Halaman login default
 Route::get('/', function () {
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');  // Admin Dashboard
         Route::resource('lapangan', LapanganController::class);
         Route::resource('pemesanan', PemesananController::class);
+        Route::resource('bantuan', BantuanController::class);
     });
 
     // Rute yang bisa diakses oleh semua pengguna yang sudah login

@@ -12,7 +12,10 @@
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name"
+                <input type="text"
+                    class="form-control @error('name') is-invalid @enderror"
+                    name="name"
+                    id="name"
                     value="{{ old('name') ?? $user->name }}">
                 @error('name')
                 <span class="text-danger">{{ $message }}</span>
@@ -21,7 +24,10 @@
 
             <div class="form-group">
                 <label for="last_name">Last Name</label>
-                <input type="text" class="form-control @error('last_name') is-invalid @enderror" name="last_name" id="last_name"
+                <input type="text"
+                    class="form-control @error('last_name') is-invalid @enderror"
+                    name="last_name"
+                    id="last_name"
                     value="{{ old('last_name') ?? $user->last_name }}">
                 @error('last_name')
                 <span class="text-danger">{{ $message }}</span>
@@ -30,7 +36,10 @@
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email"
+                <input type="email"
+                    class="form-control @error('email') is-invalid @enderror"
+                    name="email"
+                    id="email"
                     value="{{ old('email') ?? $user->email }}">
                 @error('email')
                 <span class="text-danger">{{ $message }}</span>
@@ -39,7 +48,9 @@
 
             <div class="form-group">
                 <label for="password">Password (kosongkan jika tidak diganti)</label>
-                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                <input type="password"
+                    class="form-control @error('password') is-invalid @enderror"
+                    name="password"
                     id="password">
                 @error('password')
                 <span class="text-danger">{{ $message }}</span>
@@ -48,8 +59,11 @@
 
             <div class="form-group">
                 <label for="password_confirmation">Confirm Password</label>
-                <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" name="password_confirmation"
-                    id="password_confirmation" placeholder="Confirm Password">
+                <input type="password"
+                    class="form-control @error('password_confirmation') is-invalid @enderror"
+                    name="password_confirmation"
+                    id="password_confirmation"
+                    placeholder="Confirm Password">
                 @error('password_confirmation')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
@@ -65,15 +79,27 @@
 
             <div class="form-group">
                 <label for="photo">Photo</label>
-                <input type="file" class="form-control-file @error('photo') is-invalid @enderror" name="photo" id="photo"
+                <input type="file"
+                    class="form-control-file @error('photo') is-invalid @enderror"
+                    name="photo"
+                    id="photo"
                     accept="image/*">
                 @error('photo')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
 
-                @if ($user->photo)
+                @php
+                // pakai profile_photo kalau ada, fallback ke photo lama
+                $photoPath = $user->profile_photo ?? $user->photo;
+                @endphp
+
+                @if ($photoPath)
                 <div class="mt-2">
-                    <img src="{{ asset('storage/' . $user->photo) }}" alt="User Photo" class="img-thumbnail" width="120">
+                    <img src="{{ asset('storage/' . $photoPath) }}"
+                        alt="User Photo"
+                        class="img-thumbnail"
+                        width="120"
+                        style="height:120px; object-fit:cover;">
                 </div>
                 @endif
             </div>
